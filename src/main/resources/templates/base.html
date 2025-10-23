@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestión de Ingresos y Gastos</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDj080IeY+UtsW7LsaV7xK2qXpC77F5F+d2R8G7Bq4mK6B2D2Vq5ZJbB5U0B5XQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="/css/adminlte.min.css">
+</head>
+
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+    <nav th:replace="~{partes/header :: header}"></nav>
+    <aside th:replace="~{partes/sidebar :: sidebar}"></aside>
+
+    <div class="content-wrapper">
+        <div th:replace="~{partes/ingresos :: ingresosContent}"></div>
+    </div>
+
+    <footer th:replace="~{partes/footer :: footer}"></footer>
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/adminlte.min.js}"></script>
+<script>
+    $(document).ready(function() {
+        // La inicialización forzada que hemos mantenido
+        $('[data-widget="pushmenu"]').PushMenu();
+        $('body').addClass('layout-fixed');
+    });
+</script>
+</body>
+</html>
