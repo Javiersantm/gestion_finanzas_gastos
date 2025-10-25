@@ -7,9 +7,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping({"/ingresos", "/"})
-    public String mostrarIngresos(Model model) {
-//        model.addAttribute("contenido", "partes/ingresos :: ingresosContent");
+    @GetMapping({"/", "/dashboard"})
+    public String mostrarDashboard(Model model) {
+        // Añade aquí atributos dinámicos que necesites mostrar en el dashboard
+        // Por ejemplo:
+        // model.addAttribute("totalIngresos", 0);
+        // model.addAttribute("totalGastos", 0);
+        // model.addAttribute("balance", 0);
         return "base";
     }
 }
