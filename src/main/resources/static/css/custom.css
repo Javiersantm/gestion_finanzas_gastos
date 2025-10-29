@@ -1,0 +1,54 @@
+/* ------------------------------------------------------------------------- */
+/* 1. Transición y Reglas Base del Tema */
+/* ------------------------------------------------------------------------- */
+body {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body[data-bs-theme="dark"] {
+    background-color: #212529; /* Fondo general oscuro */
+    color: #f8f9fa; /* Color de texto base claro */
+}
+
+/* ------------------------------------------------------------------------- */
+/* 2. Reglas Específicas para la Tabla (incomeTable) */
+/* ------------------------------------------------------------------------- */
+
+/* Estilos de la tabla cuando el cuerpo está en MODO OSCURO */
+body[data-bs-theme="dark"] #incomeTable {
+    --bs-table-bg: #2b3035;          /* Fondo base de la tabla (más oscuro que el cuerpo) */
+    --bs-table-striped-bg: #353a3f;  /* Color de la franja (rayas) */
+    --bs-table-color: #f8f9fa;       /* Color del texto de las celdas (blanco brillante) */
+    --bs-table-hover-bg: #3d4247;    /* Fondo al pasar el ratón */
+}
+
+/* La cabecera (thead) debe ser clara para contrastar con el fondo oscuro de la tabla */
+body[data-bs-theme="dark"] #incomeTable .table-light {
+    --bs-table-bg: #e9ecef;          /* Fondo de la cabecera claro */
+    --bs-table-color: #212529;       /* Texto de la cabecera oscuro */
+}
+
+/* Asegurar que el color del texto de la tabla sea visible en modo oscuro */
+body[data-bs-theme="dark"] #incomeTable tbody tr td {
+    color: #f8f9fa !important; /* Fuerza el color de texto a claro */
+}
+
+/* Opcional: Color verde para las cantidades en modo oscuro (o siempre) */
+/* Esto requiere que tu JS añada una clase a la celda de cantidad, e.g. <td class="ingreso-cantidad"> */
+/* Si no añades una clase específica, se aplicaría a todas las celdas o no funcionaría correctamente. */
+/* Para simplificar, lo aplicaremos a la celda de "Cantidad" si podemos identificarla. */
+/* Si tu JS siempre renderiza el <td> de Cantidad como el 3er td, puedes usar: */
+body[data-bs-theme="dark"] #incomeTable tbody tr td:nth-child(3) {
+    color: #28a745 !important; /* Verde de Bootstrap success */
+    font-weight: bold; /* Hacer la cantidad un poco más destacada */
+}
+
+
+/* ------------------------------------------------------------------------- */
+/* 3. Recrear el efecto 'table-striped' (Bandas) */
+/* ------------------------------------------------------------------------- */
+
+/* Aplica el color de fondo de las franjas (stripes) a las filas impares */
+#incomeTable > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: var(--bs-table-striped-bg);
+}

@@ -1,0 +1,211 @@
+<div th:fragment="nuevoIngresoModal">
+    <div
+            class="modal fade"
+            id="modal-nuevo-ingreso"
+            tabindex="-1"
+            aria-labelledby="modalNuevoIngresoLabel"
+            aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalNuevoIngresoLabel">
+                        Añadir Nuevo Ingreso
+                    </h5>
+                    <button
+                            type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"
+                            aria-label="Cerrar"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-nuevo-ingreso">
+                        <div class="mb-3">
+                            <label for="ingresoFuente" class="form-label">Fuente</label>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="ingresoFuente"
+                                    placeholder="Escribe la fuente del ingreso"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="ingresoCantidad" class="form-label">Cantidad (€)</label>
+                            <input
+                                    type="number"
+                                    class="form-control"
+                                    id="ingresoCantidad"
+                                    placeholder="0.00"
+                                    step="0.01"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="ingresoFecha" class="form-label">Fecha</label>
+                            <input
+                                    type="date"
+                                    class="form-control"
+                                    id="ingresoFecha"
+                            />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button
+                            type="button"
+                            id="btnGuardarIngreso"
+                            class="btn btn-primary"
+                    >
+                        Guardar Ingreso
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="editarIngresoModal">
+    <div
+            class="modal fade"
+            id="modal-editar-ingreso"
+            tabindex="-1"
+            aria-labelledby="modalEditarIngresoLabel"
+            aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="modalEditarIngresoLabel">
+                        Editar Ingreso
+                    </h5>
+                    <button
+                            type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"
+                            aria-label="Cerrar"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-editar-ingreso">
+                        <input type="hidden" id="ingresoIdEditar">
+
+                        <div class="mb-3">
+                            <label for="ingresoFuenteEditar" class="form-label">Fuente</label>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="ingresoFuenteEditar"
+                                    placeholder="Escribe la fuente del ingreso"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="ingresoCantidadEditar" class="form-label">Cantidad (€)</label>
+                            <input
+                                    type="number"
+                                    class="form-control"
+                                    id="ingresoCantidadEditar"
+                                    placeholder="0.00"
+                                    step="0.01"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="ingresoFechaEditar" class="form-label">Fecha</label>
+                            <input
+                                    type="date"
+                                    class="form-control"
+                                    id="ingresoFechaEditar"
+                            />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button
+                            type="button"
+                            id="btnActualizarIngreso"
+                            class="btn btn-info"
+                    >
+                        Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:fragment="bizumModal">
+    <div
+            class="modal fade"
+            id="modal-recibir-bizum"
+            tabindex="-1"
+            aria-labelledby="modalRecibirBizumLabel"
+            aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-mobile-alt fa-lg"></i>
+                        <h5 class="modal-title mb-0" id="modalRecibirBizumLabel">
+                            Recibir Bizum
+                        </h5>
+                    </div>
+                    <button
+                            type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"
+                            aria-label="Cerrar"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="senderPhone" class="form-label">Número de Teléfono del Remitente</label>
+                            <input
+                                    type="tel"
+                                    class="form-control"
+                                    id="senderPhone"
+                                    placeholder="+34 600 000 000"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="bizumAmount" class="form-label">Cantidad (€)</label>
+                            <input
+                                    type="number"
+                                    class="form-control"
+                                    id="bizumAmount"
+                                    placeholder="0.00"
+                                    step="0.01"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="bizumConcept" class="form-label">Concepto</label>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="bizumConcept"
+                                    placeholder="Descripción del pago"
+                            />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button
+                            type="button"
+                            class="btn btn-success"
+                            data-bs-dismiss="modal"
+                    >
+                        Confirmar Recepción
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

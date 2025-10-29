@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.math.BigDecimal;
 
 @Service
 public class IngresosService {
@@ -32,7 +33,9 @@ public class IngresosService {
     public IngresosEntity guardarIngreso(IngresosEntity ingreso) {
         if (Objects.isNull(ingreso)) throw new IllegalArgumentException("Ingreso vacío");
         if (ingreso.getCantidad() == null) throw new IllegalArgumentException("Cantidad nula");
-        if (ingreso.getCantidad() <= 0) throw new IllegalArgumentException("Cantidad inválida");
+
+        if (ingreso.getCantidad().compareTo(BigDecimal.ZERO) <= 0) throw new IllegalArgumentException("Cantidad inválida");
+
         return ingresoRepository.save(ingreso);
     }
 
