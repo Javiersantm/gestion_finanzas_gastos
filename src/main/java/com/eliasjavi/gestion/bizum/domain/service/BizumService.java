@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.math.BigDecimal; // Importación necesaria
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,14 @@ public class BizumService {
         // Crear la entidad Ingreso
         IngresosEntity nuevoIngreso = new IngresosEntity();
         nuevoIngreso.setUsuario(destinatario);
-        nuevoIngreso.setCantidad(bizumDTO.getCantidad());
+
+        // *** CORRECCIÓN DE TIPO ***
+        // Convertimos la cantidad del DTO a BigDecimal antes de asignarla.
+        // Se usa String.valueOf() para evitar problemas de precisión del double.
+        BigDecimal cantidadBizum = new BigDecimal(String.valueOf(bizumDTO.getCantidad()));
+        nuevoIngreso.setCantidad(cantidadBizum);
+        // *************************
+
         nuevoIngreso.setFuente("Bizum recibido: " + bizumDTO.getConcepto());
         nuevoIngreso.setFecha(LocalDate.now());
 

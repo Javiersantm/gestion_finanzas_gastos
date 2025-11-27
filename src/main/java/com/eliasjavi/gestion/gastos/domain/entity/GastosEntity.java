@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
+import java.math.BigDecimal; // <-- ¡IMPORTACIÓN NECESARIA!
 
 @Entity
 @Data
@@ -15,12 +16,11 @@ public class GastosEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull // Un gasto siempre debe estar ligado a un usuario
-    @ManyToOne(fetch = FetchType.LAZY) // Relación: Muchos gastos pertenecen a Un usuario
-
-    @JoinColumn(name = "usuario_id") // Así se llama la columna en la BBDD
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
     private UserEntity usuario;
     private String descripcion;
-    private Double cantidad;
+    private BigDecimal cantidad;
     private LocalDate fecha;
 }

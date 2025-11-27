@@ -5,6 +5,7 @@ import com.eliasjavi.gestion.usuarios.domain.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
+import java.math.BigDecimal; // Importación necesaria para BigDecimal
 
 @Component
 @RequiredArgsConstructor
@@ -25,11 +26,13 @@ public class DataLoader implements CommandLineRunner {
             UserEntity usuarioDePrueba = new UserEntity();
             usuarioDePrueba.setEmail(emailDePrueba);
             usuarioDePrueba.setNombre("Usuario de Prueba");
-            usuarioDePrueba.setSaldo(100.0); // Le ponemos 100€ para empezar
+
+            // CORRECCIÓN: Inicializar el saldo a 0.00
+            usuarioDePrueba.setSaldo(BigDecimal.ZERO); // Usar BigDecimal.ZERO para 0.00
 
             userRepository.save(usuarioDePrueba);
 
-            System.out.println("--- USUARIO 'mi.email@prueba.com' CREADO CON SALDO 100.0 ---");
+            System.out.println("--- USUARIO 'mi.email@prueba.com' CREADO CON SALDO 0.00 ---");
         } else {
             System.out.println("--- EL USUARIO DE PRUEBA YA EXISTE ---");
         }

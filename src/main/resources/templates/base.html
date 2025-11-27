@@ -24,12 +24,15 @@
 
     <nav th:replace="~{partes/header :: header}"></nav>
 
+
+
     <main class="container-fluid flex-grow-1">
         <div th:replace="~{partes/ingresos :: ingresosContent}"></div>
     </main>
 
     <footer th:replace="~{partes/footer :: footer}"></footer>
 </div>
+
 
 <div th:replace="~{partes/modals :: nuevoIngresoModal}"></div>
 <div th:replace="~{partes/modals :: editarIngresoModal}"></div> <div th:replace="~{partes/modals :: bizumModal}"></div>
@@ -98,12 +101,44 @@
         if (isSuccess) {
             toastHeader.className = 'toast-header bg-success text-white';
         } else {
-             // Usar bg-danger si es un error o bg-warning si es una advertencia
              toastHeader.className = 'toast-header bg-danger text-white';
         }
 
         const toast = new bootstrap.Toast(toastElement);
         toast.show();
+    }
+
+    function actualizarSaldoDOM() {
+        fetch('/api/saldo-actual')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('No se pudo obtener el saldo.');
+                }
+                return response.json();
+            })
+            .then(saldo => {
+                const elementoSaldoH3 = document.getElementById('saldoActualContainer');
+                const elementoSaldoStrong = document.getElementById('saldoActualDisplay');
+
+                if (elementoSaldoH3 && elementoSaldoStrong) {
+                    const saldoFormateado = new Intl.NumberFormat('es-ES', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(saldo);
+                    elementoSaldoStrong.textContent = saldoFormateado;
+
+                    elementoSaldoH3.classList.remove('text-success', 'text-danger');
+
+                    if (saldo < 0) {
+                        elementoSaldoH3.classList.add('text-danger');
+                    } else {
+                        elementoSaldoH3.classList.add('text-success');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("Error al actualizar el saldo:", error);
+            });
     }
 
     function cargarIngresos() {
@@ -176,7 +211,6 @@
         })
         .then(response => {
             if (!response.ok) {
-                // Si hay un error, intentamos parsear el JSON de error
                 return response.json().then(errorData => {
                     throw new Error(errorData.message || 'Error desconocido del servidor.');
                 }).catch(() => {
@@ -186,12 +220,12 @@
             return response.json();
         })
         .then(data => {
-            // 1. Ocultar el modal y recargar la tabla
             $('#modal-nuevo-ingreso').modal('hide');
             $('#form-nuevo-ingreso')[0].reset();
             cargarIngresos();
 
-            // 2. MOSTRAR EL TOAST DE ÉXITO
+            actualizarSaldoDOM();
+
             showToast("El ingreso se ha guardado correctamente.");
         })
         .catch(error => {
@@ -200,20 +234,18 @@
         });
     }
 
-    // FUNCIÓN ELIMINAR INGRESO CON SWEETALERT2
     function eliminarIngreso(id) {
         Swal.fire({
             title: '¿Está seguro?',
             text: "¡No podrás revertir la eliminación de este ingreso!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#28a745', // Verde de Bootstrap
-            cancelButtonColor: '#dc3545',    // Rojo de Bootstrap
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#dc3545',
             confirmButtonText: 'Sí, eliminar',
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Lógica de fetch DELETE
                 fetch(`/ingresos/${id}`, {
                     method: 'DELETE',
                     headers: {
@@ -222,15 +254,15 @@
                 })
                 .then(response => {
                     if (response.status === 204) {
-                        // Éxito: Código 204 No Content
                         cargarIngresos();
-                        // CORREGIDO: Mensaje genérico
+
+                        actualizarSaldoDOM();
+
                         showToast(`El ingreso se ha eliminado correctamente.`);
 
                     } else if (response.status === 404) {
                         Swal.fire('Error', `Ingreso con ID ${id} no encontrado.`, 'error');
                     } else {
-                        // Manejo de otros errores del servidor
                         return response.json().then(errorData => {
                             Swal.fire('Error', errorData.message || 'Error desconocido del servidor.', 'error');
                         }).catch(() => {
@@ -246,7 +278,6 @@
         });
     }
 
-    // FUNCIÓN DE CARGA DE DATOS PARA EDICIÓN
     function cargarDatosEdicion(id) {
         fetch(`/ingresos/${id}`)
             .then(response => {
@@ -256,16 +287,11 @@
                 return response.json();
             })
             .then(ingreso => {
-                // Rellenar campos del modal de edición
                 $('#ingresoIdEditar').val(ingreso.id);
                 $('#ingresoFuenteEditar').val(ingreso.fuente);
                 $('#ingresoCantidadEditar').val(ingreso.cantidad);
 
-                // Formatear fecha para el input type="date" (YYYY-MM-DD)
                 $('#ingresoFechaEditar').val(ingreso.fecha);
-
-                // Abrir el modal (ya lo manejamos en el onclick, pero es buena práctica)
-                // $('#modal-editar-ingreso').modal('show');
             })
             .catch(error => {
                 console.error('Error al obtener datos para edición:', error);
@@ -273,7 +299,6 @@
             });
     }
 
-    // FUNCIÓN DE ACTUALIZACIÓN (PUT)
     function actualizarIngreso() {
         const id = $('#ingresoIdEditar').val();
         const fuente = $('#ingresoFuenteEditar').val();
@@ -302,7 +327,6 @@
         })
         .then(response => {
             if (!response.ok) {
-                // Manejar errores del servidor
                 return response.json().then(errorData => {
                     throw new Error(errorData.message || 'Error desconocido del servidor.');
                 }).catch(() => {
@@ -312,12 +336,12 @@
             return response.json();
         })
         .then(data => {
-            // Éxito: cerrar modal, limpiar y recargar
             $('#modal-editar-ingreso').modal('hide');
             $('#form-editar-ingreso')[0].reset();
             cargarIngresos();
 
-            // CORREGIDO: Mensaje genérico
+            actualizarSaldoDOM();
+
             showToast(`El ingreso se ha actualizado correctamente.`);
         })
         .catch(error => {
@@ -328,8 +352,9 @@
 
     $(document).ready(function() {
         cargarIngresos();
+        actualizarSaldoDOM();
+
         $('#btnGuardarIngreso').on('click', guardarIngreso);
-        // CONECTAR EL BOTÓN DE ACTUALIZAR
         $('#btnActualizarIngreso').on('click', actualizarIngreso);
     });
 </script>

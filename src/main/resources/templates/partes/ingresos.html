@@ -1,15 +1,21 @@
 <div th:fragment="ingresosContent" class="container py-4">
 
-    <div class="mb-4">
+    <div class="mb-2">
         <h1 class="h2 fw-bold">Panel de Ingresos</h1>
     </div>
 
+    <div class="mb-4">
+        <h3 id="saldoActualContainer" class="mb-0" style="font-size: 1.5rem;">
+            Saldo Actual:
+            <strong id="saldoActualDisplay" th:text="${#numbers.formatDecimal(usuarioSaldo, 0, 'COMMA', 2, 'POINT')}">2,048.00</strong> €
+        </h3>
+    </div>
     <div class="row g-4 mb-4">
         <div class="col-md-4">
             <div class="card border-0 shadow-sm bg-success text-white">
                 <div class="card-body">
                     <h5 class="card-title fw-semibold mb-3">Total Ingresos</h5>
-                    <p class="card-text display-6 fw-bold">€0.00</p>
+                    <p class="card-text display-6 fw-bold" id="totalIngresosDisplay">€0.00</p>
                     <small class="opacity-75">Mes Actual</small>
                 </div>
             </div>
@@ -19,7 +25,7 @@
             <div class="card border-0 shadow-sm bg-warning text-white">
                 <div class="card-body">
                     <h5 class="card-title fw-semibold mb-3">Gastos del Mes</h5>
-                    <p class="card-text display-6 fw-bold">€0.00</p>
+                    <p class="card-text display-6 fw-bold" id="gastosMesDisplay">€0.00</p>
                     <small class="opacity-75">Mes Actual</small>
                 </div>
             </div>
@@ -29,7 +35,7 @@
             <div class="card border-0 shadow-sm bg-info text-white">
                 <div class="card-body">
                     <h5 class="card-title fw-semibold mb-3">Balance Actual</h5>
-                    <p class="card-text display-6 fw-bold">€0.00</p>
+                    <p class="card-text display-6 fw-bold" id="balanceMesDisplay">€0.00</p>
                     <small class="opacity-75">Disponible</small>
                 </div>
             </div>

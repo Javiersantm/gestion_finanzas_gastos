@@ -10,7 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.math.BigDecimal; // Importación necesaria
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 public class IngresosService {
@@ -33,42 +34,84 @@ public class IngresosService {
         return ingresoRepository.findById(id);
     }
 
+    /**
+     * Guarda o actualiza un ingreso y ajusta el saldo del usuario correctamente.
+     * Si el ID existe, se trata como una edición.
+     */
     @Transactional
     public IngresosEntity guardarIngreso(IngresosEntity ingreso) {
         if (Objects.isNull(ingreso)) throw new IllegalArgumentException("Ingreso vacío");
         if (ingreso.getCantidad() == null) throw new IllegalArgumentException("Cantidad nula");
-
-        // 1. Verificación de Cantidad (Tu lógica con BigDecimal)
         if (ingreso.getCantidad().compareTo(BigDecimal.ZERO) <= 0) throw new IllegalArgumentException("Cantidad inválida");
-
-        // 2. Verificación de Usuario (Lógica del compañero)
         if (ingreso.getUsuario() == null || ingreso.getUsuario().getId() == null) {
             throw new IllegalArgumentException("El ingreso debe estar ligado a un usuario con ID válido");
         }
 
-        // 3. Buscamos al usuario real para actualizar el saldo
+        BigDecimal cantidadNueva = ingreso.getCantidad();
+        BigDecimal cantidadOriginal = BigDecimal.ZERO;
+
+        // 1. Manejo de Edición vs. Creación
+        if (ingreso.getId() != null) {
+            // Es una EDICIÓN:
+            // Obtenemos la cantidad original antes de guardar los cambios
+            IngresosEntity ingresoOriginal = ingresoRepository.findById(ingreso.getId())
+                    .orElseThrow(() -> new RuntimeException("Ingreso a editar no encontrado."));
+
+            cantidadOriginal = ingresoOriginal.getCantidad();
+        }
+
+        // 2. Buscamos y preparamos al usuario
         UserEntity usuario = userRepository.findById(ingreso.getUsuario().getId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // 4. Actualizamos el saldo
-        // Nota: Conversión a doubleValue() porque asumimos que UserEntity.saldo es Double.
-        usuario.setSaldo(usuario.getSaldo() + ingreso.getCantidad().doubleValue());
+        if (usuario.getSaldo() == null) {
+            usuario.setSaldo(BigDecimal.ZERO);
+        }
 
-        // 5. Guardamos al usuario con su nuevo saldo
+        // 3. Ajuste del saldo: Restamos lo viejo y sumamos lo nuevo
+        // Primero, revertimos la cantidad original (solo si es edición)
+        BigDecimal saldoTemporal = usuario.getSaldo().subtract(cantidadOriginal);
+
+        // Luego, sumamos la nueva cantidad
+        usuario.setSaldo(saldoTemporal.add(cantidadNueva));
+
+        // 4. Guardamos el usuario y el ingreso
         userRepository.save(usuario);
-
-        // 6. Guardamos el ingreso
         return ingresoRepository.save(ingreso);
     }
 
+    /**
+     * Elimina un ingreso por ID y actualiza el saldo del usuario restando la cantidad.
+     * @param id El ID del ingreso a eliminar.
+     * @return true si se eliminó, false si no se encontró.
+     */
     @Transactional
     public boolean deleteById(Long id) {
-        if (!ingresoRepository.existsById(id)) {
+        Optional<IngresosEntity> ingresoOptional = ingresoRepository.findById(id);
+
+        if (ingresoOptional.isEmpty()) {
             return false;
         }
-        // Nota: Si el deleteById debe ajustar el saldo, la lógica debe ir aquí también.
-        // Asumiendo que esta es solo la eliminación simple por ahora.
-        ingresoRepository.deleteById(id);
+
+        IngresosEntity ingreso = ingresoOptional.get();
+        BigDecimal cantidadAEliminar = ingreso.getCantidad();
+        Long userId = ingreso.getUsuario().getId();
+
+        // 1. Eliminación de la base de datos
+        ingresoRepository.delete(ingreso);
+
+        // 2. Ajuste de saldo
+        UserEntity usuario = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario asociado al ingreso no encontrado."));
+
+        if (usuario.getSaldo() == null) {
+            usuario.setSaldo(BigDecimal.ZERO);
+        }
+
+        usuario.setSaldo(usuario.getSaldo().subtract(cantidadAEliminar));
+
+        userRepository.save(usuario);
+
         return true;
     }
 }
