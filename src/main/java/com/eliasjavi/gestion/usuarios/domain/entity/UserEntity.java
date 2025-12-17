@@ -18,18 +18,26 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El email es obligatorio")
-    @Email(message = "Formato de email incorrecto")
+    @NotBlank
+    @Email
     @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank(message = "El nombre es obligatorio")
+    @NotBlank
     private String nombre;
 
-    @NotNull(message = "El saldo no puede ser nulo")
+    @NotBlank
+    private String password;
+
+    @NotNull
     private BigDecimal saldo;
+
+    // --- NUEVO CAMPO: ROL ---
+    // Valores posibles: "USER", "ADMIN"
+    private String rol;
 
     public UserEntity() {
         this.saldo = BigDecimal.ZERO;
+        this.rol = "USER"; // Por defecto todos son usuarios normales
     }
 }

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login | Gestión Finanzas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+    <style>
+        body {
+            background-color: #212529; /* Fondo oscuro global */
+            color: #fff;
+        }
+        .login-box {
+            width: 400px;
+            margin: 7% auto; /* Centrado */
+        }
+        .card {
+            background-color: #343a40; /* Fondo tarjeta más claro */
+            border: 1px solid #4b545c;
+        }
+        .form-control {
+            background-color: #212529;
+            border: 1px solid #6c757d;
+            color: #fff;
+        }
+        .form-control:focus {
+            background-color: #2b3035;
+            color: #fff;
+            border-color: #0d6efd;
+            box-shadow: none;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-wallet text-primary"></i> Gestión Finanzas</h2>
+    </div>
+
+    <div class="card shadow-lg">
+        <div class="card-body p-4">
+            <p class="login-box-msg text-center mb-3">Inicia sesión para continuar</p>
+
+            <div th:if="${param.error}" class="alert alert-danger text-center p-2">
+                Usuario o contraseña incorrectos
+            </div>
+
+            <div th:if="${param.registered}" class="alert alert-success text-center p-2">
+                ¡Registro exitoso! Por favor inicia sesión.
+            </div>
+            <div th:if="${param.logout}" class="alert alert-info text-center p-2">
+                Has cerrado sesión correctamente.
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="input-group mb-3">
+                    <input type="text" name="username" class="form-control" placeholder="Email" required autofocus>
+                    <span class="input-group-text bg-secondary border-secondary text-white"><i class="fas fa-envelope"></i></span>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+                    <span class="input-group-text bg-secondary border-secondary text-white"><i class="fas fa-lock"></i></span>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </div>
+            </form>
+
+            <p class="mb-0 mt-3 text-center">
+                <a th:href="@{/register}" class="text-decoration-none text-info">Registrar un nuevo usuario</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

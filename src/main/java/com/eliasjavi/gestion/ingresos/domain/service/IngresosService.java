@@ -7,11 +7,10 @@ import com.eliasjavi.gestion.usuarios.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 @Service
 public class IngresosService {
@@ -24,9 +23,18 @@ public class IngresosService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Lista ingresos dependiendo del rol.
+     * Admin: Ve todo.
+     * User: Ve solo lo suyo.
+     */
     @Transactional(readOnly = true)
-    public List<IngresosEntity> listarIngresos() {
-        return ingresoRepository.findAll();
+    public List<IngresosEntity> listarIngresos(String emailUsuario, boolean esAdmin) {
+        if (esAdmin) {
+            return ingresoRepository.findAll();
+        } else {
+            return ingresoRepository.findByUsuario_Email(emailUsuario);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -34,10 +42,6 @@ public class IngresosService {
         return ingresoRepository.findById(id);
     }
 
-    /**
-     * Guarda o actualiza un ingreso y ajusta el saldo del usuario correctamente.
-     * Si el ID existe, se trata como una edición.
-     */
     @Transactional
     public IngresosEntity guardarIngreso(IngresosEntity ingreso) {
         if (Objects.isNull(ingreso)) throw new IllegalArgumentException("Ingreso vacío");
@@ -50,13 +54,10 @@ public class IngresosService {
         BigDecimal cantidadNueva = ingreso.getCantidad();
         BigDecimal cantidadOriginal = BigDecimal.ZERO;
 
-        // 1. Manejo de Edición vs. Creación
+        // 1. Manejo de Edición
         if (ingreso.getId() != null) {
-            // Es una EDICIÓN:
-            // Obtenemos la cantidad original antes de guardar los cambios
             IngresosEntity ingresoOriginal = ingresoRepository.findById(ingreso.getId())
                     .orElseThrow(() -> new RuntimeException("Ingreso a editar no encontrado."));
-
             cantidadOriginal = ingresoOriginal.getCantidad();
         }
 
@@ -68,48 +69,45 @@ public class IngresosService {
             usuario.setSaldo(BigDecimal.ZERO);
         }
 
-        // 3. Ajuste del saldo: Restamos lo viejo y sumamos lo nuevo
-        // Primero, revertimos la cantidad original (solo si es edición)
+        // 3. Ajuste del saldo
         BigDecimal saldoTemporal = usuario.getSaldo().subtract(cantidadOriginal);
-
-        // Luego, sumamos la nueva cantidad
         usuario.setSaldo(saldoTemporal.add(cantidadNueva));
 
-        // 4. Guardamos el usuario y el ingreso
+        // 4. Guardar
         userRepository.save(usuario);
         return ingresoRepository.save(ingreso);
     }
 
     /**
-     * Elimina un ingreso por ID y actualiza el saldo del usuario restando la cantidad.
-     * @param id El ID del ingreso a eliminar.
-     * @return true si se eliminó, false si no se encontró.
+     * Elimina con seguridad: Verifica si el usuario tiene permiso (es dueño o Admin).
      */
     @Transactional
-    public boolean deleteById(Long id) {
-        Optional<IngresosEntity> ingresoOptional = ingresoRepository.findById(id);
+    public boolean deleteById(Long id, String emailSolicitante, boolean esAdmin) {
+        Optional<IngresosEntity> ingresoOpt = ingresoRepository.findById(id);
 
-        if (ingresoOptional.isEmpty()) {
+        if (ingresoOpt.isEmpty()) {
             return false;
         }
 
-        IngresosEntity ingreso = ingresoOptional.get();
+        IngresosEntity ingreso = ingresoOpt.get();
+
+        // --- SEGURIDAD ---
+        // Si NO es admin Y el ingreso NO es suyo -> Error
+        if (!esAdmin && !ingreso.getUsuario().getEmail().equals(emailSolicitante)) {
+            throw new RuntimeException("No tienes permisos para eliminar este ingreso.");
+        }
+
         BigDecimal cantidadAEliminar = ingreso.getCantidad();
         Long userId = ingreso.getUsuario().getId();
 
-        // 1. Eliminación de la base de datos
+        // 1. Eliminar
         ingresoRepository.delete(ingreso);
 
         // 2. Ajuste de saldo
         UserEntity usuario = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuario asociado al ingreso no encontrado."));
-
-        if (usuario.getSaldo() == null) {
-            usuario.setSaldo(BigDecimal.ZERO);
-        }
+                .orElseThrow(() -> new RuntimeException("Usuario asociado no encontrado."));
 
         usuario.setSaldo(usuario.getSaldo().subtract(cantidadAEliminar));
-
         userRepository.save(usuario);
 
         return true;

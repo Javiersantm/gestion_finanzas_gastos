@@ -27,4 +27,6 @@ public class IngresosEntity {
     private BigDecimal cantidad;
 
     private LocalDate fecha;
+
+    private String categoria;
 }

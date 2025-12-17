@@ -3,28 +3,71 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gestión de Ingresos y Gastos</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          crossorigin="anonymous">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <title>Gestión de Finanzas</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-          referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
     <link rel="stylesheet" th:href="@{/css/custom.css}">
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 <div class="d-flex flex-column min-vh-100">
 
-    <nav th:replace="~{partes/header :: header}"></nav>
+    <nav th:fragment="header" class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" th:href="@{/}">Gestión de Finanzas</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
+            <ul class="navbar-nav ms-auto d-lg-none">
+                <li class="nav-item">
+                    <button id="themeToggleMobile" class="btn btn-outline-light btn-sm" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+            </ul>
 
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/}">Dashboard</a></li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-2 d-none d-lg-block">
+                        <button id="themeToggle" class="btn btn-outline-light" onclick="toggleTheme()" title="Cambiar Tema">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${#authentication.name}">Usuario</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
     <main class="container-fluid flex-grow-1">
         <div th:replace="~{partes/ingresos :: ingresosContent}"></div>
@@ -33,27 +76,25 @@
     <footer th:replace="~{partes/footer :: footer}"></footer>
 </div>
 
-
 <div th:replace="~{partes/modals :: nuevoIngresoModal}"></div>
-<div th:replace="~{partes/modals :: editarIngresoModal}"></div> <div th:replace="~{partes/modals :: bizumModal}"></div>
+<div th:replace="~{partes/modals :: nuevoGastoModal}"></div>
+<div th:replace="~{partes/modals :: editarIngresoModal}"></div>
+<div th:replace="~{partes/modals :: editarGastoModal}"></div>
+<div th:replace="~{partes/modals :: bizumModal}"></div>
 
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
         <div class="toast-header bg-success text-white">
             <i class="fas fa-check-circle me-2"></i>
             <strong class="me-auto">Éxito</strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
         </div>
-        <div class="toast-body">
-            El ingreso se ha guardado correctamente.
-        </div>
+        <div class="toast-body">Operación realizada correctamente.</div>
     </div>
 </div>
-<script th:src="@{/js/jquery.min.js}"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
 <script>
     const themeToggle = document.getElementById('themeToggle');
@@ -62,301 +103,27 @@
     function applyTheme(theme) {
         if (theme === 'dark') {
             body.setAttribute('data-bs-theme', 'dark');
-            if (themeToggle) {
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                themeToggle.setAttribute('title', 'Modo Claro');
-            }
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
         } else {
             body.removeAttribute('data-bs-theme');
-            if (themeToggle) {
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                themeToggle.setAttribute('title', 'Modo Oscuro');
-            }
+            if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
         }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        const storedTheme = localStorage.getItem('theme') ||
-                            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        const storedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         applyTheme(storedTheme);
     });
 
     function toggleTheme() {
-        const currentTheme = body.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
+        const current = body.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
+        const newTheme = current === 'dark' ? 'light' : 'dark';
         localStorage.setItem('theme', newTheme);
         applyTheme(newTheme);
     }
 </script>
 
-<script>
-    function showToast(message, isSuccess = true) {
-        const toastElement = document.getElementById('successToast');
-        const toastBody = toastElement.querySelector('.toast-body');
-        const toastHeader = toastElement.querySelector('.toast-header');
+<script th:src="@{/js/dashboard.js}"></script>
 
-        toastBody.textContent = message;
-
-        if (isSuccess) {
-            toastHeader.className = 'toast-header bg-success text-white';
-        } else {
-             toastHeader.className = 'toast-header bg-danger text-white';
-        }
-
-        const toast = new bootstrap.Toast(toastElement);
-        toast.show();
-    }
-
-    function actualizarSaldoDOM() {
-        fetch('/api/saldo-actual')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('No se pudo obtener el saldo.');
-                }
-                return response.json();
-            })
-            .then(saldo => {
-                const elementoSaldoH3 = document.getElementById('saldoActualContainer');
-                const elementoSaldoStrong = document.getElementById('saldoActualDisplay');
-
-                if (elementoSaldoH3 && elementoSaldoStrong) {
-                    const saldoFormateado = new Intl.NumberFormat('es-ES', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }).format(saldo);
-                    elementoSaldoStrong.textContent = saldoFormateado;
-
-                    elementoSaldoH3.classList.remove('text-success', 'text-danger');
-
-                    if (saldo < 0) {
-                        elementoSaldoH3.classList.add('text-danger');
-                    } else {
-                        elementoSaldoH3.classList.add('text-success');
-                    }
-                }
-            })
-            .catch(error => {
-                console.error("Error al actualizar el saldo:", error);
-            });
-    }
-
-    function cargarIngresos() {
-        fetch('/ingresos')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error de red o API: ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const tbody = $('#ingresosTableBody');
-                tbody.empty();
-
-                if (data.length === 0) {
-                     tbody.append('<tr><td colspan="5">No hay ingresos registrados.</td></tr>');
-                } else {
-                    data.forEach(ingreso => {
-                        const row = `
-                            <tr>
-                                <td>${ingreso.id}</td>
-                                <td>${ingreso.fuente}</td>
-                                <td>${ingreso.cantidad ? ingreso.cantidad.toFixed(2) : '0.00'} €</td>
-                                <td>${ingreso.fecha ? new Date(ingreso.fecha.replace(/-/g, '/')).toLocaleDateString() : 'N/A'}</td>
-                                <td>
-                                    <a href="#"
-                                       class="btn btn-sm btn-info"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#modal-editar-ingreso"
-                                       onclick="cargarDatosEdicion(${ingreso.id})">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-danger" onclick="eliminarIngreso(${ingreso.id})"><i class="fas fa-trash"></i></a>
-                                </td>
-                            </tr>
-                        `;
-                        tbody.append(row);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Error al cargar ingresos:", error);
-                $('#ingresosTableBody').html(`<tr><td colspan="5" class="text-danger">Error: ${error.message}. Verifica la API /ingresos y el servidor.</td></tr>`);
-            });
-    }
-
-    function guardarIngreso() {
-        const fuente = $('#ingresoFuente').val();
-        const cantidad = $('#ingresoCantidad').val();
-        const fecha = $('#ingresoFecha').val();
-
-        if (!fuente || !cantidad || !fecha || parseFloat(cantidad) <= 0) {
-            Swal.fire('Advertencia', 'Por favor, rellene todos los campos con valores válidos.', 'warning');
-            return;
-        }
-
-        const ingresoData = {
-            usuarioId: 1,
-            fuente: fuente,
-            cantidad: parseFloat(cantidad),
-            fecha: fecha
-        };
-
-        fetch('/ingresos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(ingresoData),
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(errorData => {
-                    throw new Error(errorData.message || 'Error desconocido del servidor.');
-                }).catch(() => {
-                    throw new Error('Error al guardar el ingreso: ' + response.statusText);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            $('#modal-nuevo-ingreso').modal('hide');
-            $('#form-nuevo-ingreso')[0].reset();
-            cargarIngresos();
-
-            actualizarSaldoDOM();
-
-            showToast("El ingreso se ha guardado correctamente.");
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', error.message, 'error');
-        });
-    }
-
-    function eliminarIngreso(id) {
-        Swal.fire({
-            title: '¿Está seguro?',
-            text: "¡No podrás revertir la eliminación de este ingreso!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#dc3545',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/ingresos/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => {
-                    if (response.status === 204) {
-                        cargarIngresos();
-
-                        actualizarSaldoDOM();
-
-                        showToast(`El ingreso se ha eliminado correctamente.`);
-
-                    } else if (response.status === 404) {
-                        Swal.fire('Error', `Ingreso con ID ${id} no encontrado.`, 'error');
-                    } else {
-                        return response.json().then(errorData => {
-                            Swal.fire('Error', errorData.message || 'Error desconocido del servidor.', 'error');
-                        }).catch(() => {
-                            Swal.fire('Error', 'Error al eliminar el ingreso.', 'error');
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire('Error', `Error de red: ${error.message}.`, 'error');
-                });
-            }
-        });
-    }
-
-    function cargarDatosEdicion(id) {
-        fetch(`/ingresos/${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error al cargar datos de edición: ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(ingreso => {
-                $('#ingresoIdEditar').val(ingreso.id);
-                $('#ingresoFuenteEditar').val(ingreso.fuente);
-                $('#ingresoCantidadEditar').val(ingreso.cantidad);
-
-                $('#ingresoFechaEditar').val(ingreso.fecha);
-            })
-            .catch(error => {
-                console.error('Error al obtener datos para edición:', error);
-                Swal.fire('Error', `No se pudieron cargar los datos para edición: ${error.message}.`, 'error');
-            });
-    }
-
-    function actualizarIngreso() {
-        const id = $('#ingresoIdEditar').val();
-        const fuente = $('#ingresoFuenteEditar').val();
-        const cantidad = $('#ingresoCantidadEditar').val();
-        const fecha = $('#ingresoFechaEditar').val();
-
-        if (!fuente || !cantidad || !fecha || parseFloat(cantidad) <= 0) {
-            Swal.fire('Advertencia', 'Por favor, rellene todos los campos con valores válidos.', 'warning');
-            return;
-        }
-
-        const ingresoData = {
-            id: id,
-            usuarioId: 1,
-            fuente: fuente,
-            cantidad: parseFloat(cantidad),
-            fecha: fecha
-        };
-
-        fetch(`/ingresos/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(ingresoData),
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(errorData => {
-                    throw new Error(errorData.message || 'Error desconocido del servidor.');
-                }).catch(() => {
-                    throw new Error('Error al actualizar el ingreso: ' + response.statusText);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            $('#modal-editar-ingreso').modal('hide');
-            $('#form-editar-ingreso')[0].reset();
-            cargarIngresos();
-
-            actualizarSaldoDOM();
-
-            showToast(`El ingreso se ha actualizado correctamente.`);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', `Error al actualizar: ${error.message}.`, 'error');
-        });
-    }
-
-    $(document).ready(function() {
-        cargarIngresos();
-        actualizarSaldoDOM();
-
-        $('#btnGuardarIngreso').on('click', guardarIngreso);
-        $('#btnActualizarIngreso').on('click', actualizarIngreso);
-    });
-</script>
 </body>
 </html>

@@ -1,0 +1,17 @@
+# CONFIGURACIÓN DE EJEMPLO - RENOMBRAR A application.properties
+spring.application.name=gestion
+
+# Base de Datos
+spring.datasource.url=jdbc:mysql://localhost:3306/ingresos
+spring.datasource.username=TU_USUARIO_MYSQL
+spring.datasource.password=TU_CONTRASEÑA_MYSQL
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.jpa.hibernate.ddl-auto=update
+
+# Email (Gmail App Password)
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=tu_email@gmail.com
+spring.mail.password=tu_contraseña_aplicacion
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true

@@ -1,66 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
 <div th:fragment="nuevoIngresoModal">
-    <div
-            class="modal fade"
-            id="modal-nuevo-ingreso"
-            tabindex="-1"
-            aria-labelledby="modalNuevoIngresoLabel"
-            aria-hidden="true"
-    >
+    <div class="modal fade" id="modal-nuevo-ingreso" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalNuevoIngresoLabel">
-                        Añadir Nuevo Ingreso
-                    </h5>
-                    <button
-                            type="button"
-                            class="btn-close btn-close-white"
-                            data-bs-dismiss="modal"
-                            aria-label="Cerrar"
-                    ></button>
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Añadir Nuevo Ingreso</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="form-nuevo-ingreso">
                         <div class="mb-3">
                             <label for="ingresoFuente" class="form-label">Fuente</label>
-                            <input
-                                    type="text"
-                                    class="form-control"
-                                    id="ingresoFuente"
-                                    placeholder="Escribe la fuente del ingreso"
-                            />
+                            <input type="text" class="form-control" id="ingresoFuente" placeholder="Ej: Nómina" />
                         </div>
                         <div class="mb-3">
                             <label for="ingresoCantidad" class="form-label">Cantidad (€)</label>
-                            <input
-                                    type="number"
-                                    class="form-control"
-                                    id="ingresoCantidad"
-                                    placeholder="0.00"
-                                    step="0.01"
-                            />
+                            <input type="number" class="form-control" id="ingresoCantidad" placeholder="0.00" step="0.01" />
                         </div>
                         <div class="mb-3">
                             <label for="ingresoFecha" class="form-label">Fecha</label>
-                            <input
-                                    type="date"
-                                    class="form-control"
-                                    id="ingresoFecha"
-                            />
+                            <input type="date" class="form-control" id="ingresoFecha" />
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-                    <button
-                            type="button"
-                            id="btnGuardarIngreso"
-                            class="btn btn-primary"
-                    >
-                        Guardar Ingreso
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnGuardarIngreso" class="btn btn-success">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="nuevoGastoModal">
+    <div class="modal fade" id="modal-nuevo-gasto" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Registrar Nuevo Gasto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-nuevo-gasto">
+                        <div class="mb-3">
+                            <label for="gastoDescripcion" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="gastoDescripcion" placeholder="Ej: Supermercado" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gastoCantidad" class="form-label">Cantidad (€)</label>
+                            <input type="number" class="form-control" id="gastoCantidad" placeholder="0.00" step="0.01" />
+                            <div class="form-text">Introduce el valor en positivo (ej: 50). Se restará automáticamente.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gastoFecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="gastoFecha" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gastoCategoria" class="form-label fw-bold">Categoría</label>
+                            <select class="form-select" id="gastoCategoria">
+                                <option value="Comida">Comida / Supermercado</option>
+                                <option value="Vivienda">Vivienda / Facturas</option>
+                                <option value="Transporte">Transporte / Gasolina</option>
+                                <option value="Ocio">Ocio</option>
+                                <option value="Salud">Salud</option>
+                                <option value="Ropa">Ropa</option>
+                                <option value="Otros" selected>Otros</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnGuardarGasto" class="btn btn-danger">Guardar Gasto</button>
                 </div>
             </div>
         </div>
@@ -68,144 +85,129 @@
 </div>
 
 <div th:fragment="editarIngresoModal">
-    <div
-            class="modal fade"
-            id="modal-editar-ingreso"
-            tabindex="-1"
-            aria-labelledby="modalEditarIngresoLabel"
-            aria-hidden="true"
-    >
+    <div class="modal fade" id="modal-editar-ingreso" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title" id="modalEditarIngresoLabel">
-                        Editar Ingreso
-                    </h5>
-                    <button
-                            type="button"
-                            class="btn-close btn-close-white"
-                            data-bs-dismiss="modal"
-                            aria-label="Cerrar"
-                    ></button>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Editar Ingreso</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="form-editar-ingreso">
                         <input type="hidden" id="ingresoIdEditar">
-
                         <div class="mb-3">
-                            <label for="ingresoFuenteEditar" class="form-label">Fuente</label>
-                            <input
-                                    type="text"
-                                    class="form-control"
-                                    id="ingresoFuenteEditar"
-                                    placeholder="Escribe la fuente del ingreso"
-                            />
+                            <label class="form-label">Fuente</label>
+                            <input type="text" class="form-control" id="ingresoFuenteEditar" />
                         </div>
                         <div class="mb-3">
-                            <label for="ingresoCantidadEditar" class="form-label">Cantidad (€)</label>
-                            <input
-                                    type="number"
-                                    class="form-control"
-                                    id="ingresoCantidadEditar"
-                                    placeholder="0.00"
-                                    step="0.01"
-                            />
+                            <label class="form-label">Cantidad (€)</label>
+                            <input type="number" class="form-control" id="ingresoCantidadEditar" step="0.01" />
                         </div>
                         <div class="mb-3">
-                            <label for="ingresoFechaEditar" class="form-label">Fecha</label>
-                            <input
-                                    type="date"
-                                    class="form-control"
-                                    id="ingresoFechaEditar"
-                            />
+                            <label class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="ingresoFechaEditar" />
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-                    <button
-                            type="button"
-                            id="btnActualizarIngreso"
-                            class="btn btn-info"
-                    >
-                        Guardar Cambios
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnActualizarIngreso" class="btn btn-primary">Actualizar</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div th:fragment="bizumModal">
-    <div
-            class="modal fade"
-            id="modal-recibir-bizum"
-            tabindex="-1"
-            aria-labelledby="modalRecibirBizumLabel"
-            aria-hidden="true"
-    >
+
+<div th:fragment="editarGastoModal">
+    <div class="modal fade" id="modal-editar-gasto" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fas fa-mobile-alt fa-lg"></i>
-                        <h5 class="modal-title mb-0" id="modalRecibirBizumLabel">
-                            Recibir Bizum
-                        </h5>
-                    </div>
-                    <button
-                            type="button"
-                            class="btn-close btn-close-white"
-                            data-bs-dismiss="modal"
-                            aria-label="Cerrar"
-                    ></button>
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">Editar Gasto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="form-editar-gasto">
+                        <input type="hidden" id="gastoIdEditar">
                         <div class="mb-3">
-                            <label for="senderPhone" class="form-label">Número de Teléfono del Remitente</label>
-                            <input
-                                    type="tel"
-                                    class="form-control"
-                                    id="senderPhone"
-                                    placeholder="+34 600 000 000"
-                            />
+                            <label class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="gastoDescripcionEditar" />
                         </div>
                         <div class="mb-3">
-                            <label for="bizumAmount" class="form-label">Cantidad (€)</label>
-                            <input
-                                    type="number"
-                                    class="form-control"
-                                    id="bizumAmount"
-                                    placeholder="0.00"
-                                    step="0.01"
-                            />
+                            <label class="form-label">Cantidad (€)</label>
+                            <input type="number" class="form-control" id="gastoCantidadEditar" step="0.01" />
                         </div>
                         <div class="mb-3">
-                            <label for="bizumConcept" class="form-label">Concepto</label>
-                            <input
-                                    type="text"
-                                    class="form-control"
-                                    id="bizumConcept"
-                                    placeholder="Descripción del pago"
-                            />
+                            <label class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="gastoFechaEditar" />
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-                    <button
-                            type="button"
-                            class="btn btn-success"
-                            data-bs-dismiss="modal"
-                    >
-                        Confirmar Recepción
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnActualizarGasto" class="btn btn-warning">Actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="bizumModal">
+    <div class="modal fade" id="modal-enviar-bizum" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-paper-plane fa-lg"></i>
+                        <h5 class="modal-title mb-0 fw-bold">Enviar Bizum</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-light border shadow-sm mb-3">
+                        <small class="text-muted"><i class="fas fa-info-circle me-1"></i> El dinero se descontará de tu saldo y se enviará al usuario con este email.</small>
+                    </div>
+                    <form id="form-enviar-bizum">
+
+                        <div class="mb-3">
+                            <label for="bizumEmail" class="form-label fw-bold">Email del Destinatario</label>
+                            <input type="email" class="form-control" id="bizumEmail" placeholder="usuario@ejemplo.com" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bizumCantidad" class="form-label fw-bold">Cantidad (€)</label>
+                            <input type="number" class="form-control" id="bizumCantidad" placeholder="0.00" step="0.01" min="0.01" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bizumConcepto" class="form-label fw-bold">Concepto</label>
+                            <input type="text" class="form-control" id="bizumConcepto" placeholder="Ej: Cena del viernes" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bizumCategoria" class="form-label fw-bold">Categoría del Gasto</label>
+                            <select class="form-select" id="bizumCategoria">
+                                <option value="Ocio">Ocio (Cenas, Fiestas)</option>
+                                <option value="Regalo">Regalo</option>
+                                <option value="Vivienda">Alquiler / Gastos Piso</option>
+                                <option value="Comida">Comida</option>
+                                <option value="Transporte">Transporte</option>
+                                <option value="Otros" selected>Otros</option>
+                            </select>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnEnviarBizum" class="btn btn-warning fw-bold text-dark">
+                        <i class="fas fa-paper-plane me-1"></i> Enviar Dinero
                     </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+</body>
+</html>

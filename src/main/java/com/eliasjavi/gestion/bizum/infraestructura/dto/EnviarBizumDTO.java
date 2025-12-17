@@ -20,4 +20,6 @@ public class EnviarBizumDTO {
 
     @NotBlank(message = "Debe incluir un concepto o remitente")
     private String concepto;
+
+    private String categoria;
 }
